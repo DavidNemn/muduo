@@ -8,10 +8,7 @@
 #include "Logger.hpp"
 #include "InetAddress.hpp"
 
-Socket::~Socket()
-{
-    close(sockfd_);
-}
+
 
 void Socket::bind_address(const InetAddress &loacladdr)
 {
@@ -77,4 +74,9 @@ void Socket::set_keepAlive(bool on)
 {
     int optval = on ? 1 : 0;
     ::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
+
+    
+Socket::~Socket()
+{
+    close(sockfd_);
 }
