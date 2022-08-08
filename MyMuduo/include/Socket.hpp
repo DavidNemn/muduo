@@ -7,7 +7,6 @@ class Socket : NonCopyable
 {
 public:
     explicit Socket(int sockfd) : sockfd_(sockfd) {}
-
     ~Socket();
 
     int get_fd() { return sockfd_; }
