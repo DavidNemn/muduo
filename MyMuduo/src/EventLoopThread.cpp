@@ -19,8 +19,7 @@ EventLoopThread::~EventLoopThread()
 
 EventLoop *EventLoopThread::start_loop()
 {
-    thread_.start(); //启动线程
-
+    thread_.start(); // 启动线程 
     EventLoop *loop = nullptr;
     {
         unique_lock<mutex> lock(thread_mutex_);
@@ -30,11 +29,11 @@ EventLoop *EventLoopThread::start_loop()
         }
         loop = loop_;
     }
-
     return loop;
 }
 
-//启动的线程中执行以下方法
+// 启动的线程中执行以下方法
+// 封装的线程 start后开启
 void EventLoopThread::thread_function()
 {
     EventLoop loop; //创建一个独立的EventLoop，和上面的线程是一一对应 one loop per thread
