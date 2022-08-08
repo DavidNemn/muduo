@@ -16,47 +16,49 @@ static int create_nonblock_sockfd()
 }
 
 Acceptor::Acceptor(EventLoop *loop, const InetAddress &listenaddr, bool reuseport)
-    : loop_(loop), accept_socket_(create_nonblock_sockfd()), accept_channel_(loop, accept_socket_.get_fd()), listenning_(false)
+    : loop_(loop), accept_socket_(create_nonblock_sockfd()), 
+    accept_channel_(loop, accept_socket_.get_fd()), listenning_(false)
 {
     accept_socket_.set_reuseAddr(true);
     accept_socket_.set_reusePort(true);
     accept_socket_.bind_address(listenaddr);
-
+    // 
     accept_channel_.set_readcallback(bind(&Acceptor::handle_read, this));
 }
 
 Acceptor::~Acceptor()
 {
     accept_channel_.dis_enable_all();
-    accept_channel_.remove();
+    accept_channel_.remove();// loop
 }
 
 void Acceptor::listen()
 {
     listenning_ = true;
     accept_socket_.listen();
-
-    //借助poller进行监听
+    // 借助poller进行监听
     accept_channel_.enable_reading();
 }
 
-//listenfd 有事件发生，即新用户连接
+// channel调用
+// listenfd 有事件发生，即新用户连接
 void Acceptor::handle_read()
 {
     InetAddress peeraddr;
-
     int connfd = accept_socket_.accept(&peeraddr);
     if (connfd > 0)
     {
         if (new_connetion_callback_)
         {
-            new_connetion_callback_(connfd, peeraddr); //轮询找到subloop，唤醒，分发当前新客户端的channel
+            new_connetion_callback_(connfd, peeraddr); // 轮询找到subloop，唤醒，分发当前新客户端的channel
         }
         else
         {
             close(connfd);
         }
     }
+    
+    
     else
     {
         LOG_ERROR("%s : %s :%d accept error : %d!\n", __FILE__, __FUNCTION__, __LINE__, errno);
