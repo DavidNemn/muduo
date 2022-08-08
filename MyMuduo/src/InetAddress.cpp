@@ -21,10 +21,8 @@ string InetAddress::get_ip() const
 string InetAddress::get_ip_port() const
 {
     uint16_t port = get_port();
-
     char buffer[BUFFER_SIZE] = {0};
     sprintf(buffer, " : %u", port);
-
     return get_ip() + buffer;
 }
 uint16_t InetAddress::get_port() const
